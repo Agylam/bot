@@ -1,3 +1,4 @@
 export enum PlatformEvent {
-    NEW_MESSAGE
+    NEW_MESSAGE,
+    START_MESSAGE
 }

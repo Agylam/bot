@@ -1,4 +1,4 @@
-export type DefaultEvent = {
-    user: string;
-    platform: string;
-}
+import {UserStates} from "../UserStates.js";
+import {Platforms} from "../Platforms.js";
+
+export type DefaultEvent =

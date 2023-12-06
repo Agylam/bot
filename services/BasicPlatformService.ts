@@ -1,28 +1,31 @@
-import {HandlerTrigger} from "../types/HandlerTrigger.js";
 import {PlatformEventList} from "../types/PlatformEventList.js";
 import {Platforms} from "../types/Platforms.js";
-import {PlatformEvent, PlatformEventWithoutUser} from "../types/PlatformEvent.js";
+import {PlatformEvent, PlatformEventCut} from "../types/PlatformEvent.js";
 import {User} from "../entities/User.js";
 import {AppDataSource} from "../data-source.js";
 import {UserStates} from "../types/UserStates.js";
+import {UnityMethods} from "../types/UnityMethods";
 
-export abstract class BasicPlatformService {
-    protected eventCallback: (trigger : PlatformEventWithoutUser, authorID : string) => void;
-    platformName: Platforms;
+export class BasicPlatformService {
+    protected eventCallback: (trigger : PlatformEventCut, unityMethods: UnityMethods) => void;
+    platform: Platforms;
     prefix = "";
 
     /* General methods */
-    registerEventCallback(callback: (trigger : PlatformEvent) => void){
-        this.eventCallback = (trigger, authorID) =>{
-            this.getUserByAuthorID(authorID)
-                .then(user => callback({...trigger, user, userState: user.state }))
+    registerEventCallback(callback: (trigger : PlatformEvent, unityMethods: UnityMethods) => void){
+        this.eventCallback = (trigger, unityMethods: UnityMethods) =>{
+            const author = unityMethods.getAuthor()
+            if (author === undefined) throw new Error("Author is undefined");
+
+            this.getUserByAuthorID(author.id)
+                .then(user => callback({...trigger, user, userState: user.state, platform: this.platform }, unityMethods))
         };
     }
     protected splitCmd(msg: string){
         if (!msg.startsWith(this.prefix)) return false;
         const args = msg.trim().split(/ +/g);
         const cmd = args[0].slice(this.prefix.length).toLowerCase();
-        return [cmd, args]
+        return {cmd, args}
     }
     protected async updateUserState(authorID : string, newState: UserStates){
         const user = await this.getUserByAuthorID(authorID);
@@ -33,7 +36,7 @@ export abstract class BasicPlatformService {
         return await AppDataSource.getRepository(User).findOneOrFail({
             where:{
                 authorID: authorID,
-                platform: this.platformName
+                platform: this.platform
             }
         })
     }
@@ -48,29 +51,28 @@ export abstract class BasicPlatformService {
         })
             .then(user => user.authorID)
     }
-    protected callNewMessageHandler(msg: string, authorID: string){
+    protected callNewMessageHandler(msg: string, unityMethods: UnityMethods){
         this.eventCallback({
             type: PlatformEventList.NEW_MESSAGE,
-            platform: this.platformName,
             text: msg,
-        }, authorID)
+        }, unityMethods)
     }
-    protected callStartMessageHandler(authorID: string){
+    protected callStartMessageHandler(unityMethods: UnityMethods){
         this.eventCallback({
             type: PlatformEventList.START_MESSAGE,
-            platform: this.platformName,
-        }, authorID)
+        }, unityMethods)
     }
 
 
 
     /* Unique methods */
-    protected constructor() {
+    constructor() {
     }
-    startService() {
+    async startService(): Promise<boolean> {
+        return false;
     }
 
-    sendMessage(userID: string, text: string) {
+    sendMessage(authorID: string, text: string) {
     }
 
 

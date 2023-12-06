@@ -5,8 +5,8 @@ import {UserStates} from "./UserStates.js";
 import {Action} from "./Action.js";
 
 export type HandlerTrigger = {
-    platform: Platforms;
-    role: string;
-    userState: UserStates;
+    platform?: Platforms;
+    role?: string;
+    userState?: UserStates;
     action: Action;
 }& (NewMessageTrigger | StartMessageTrigger)

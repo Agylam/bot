@@ -6,10 +6,9 @@ import {UserStates} from "./UserStates.js";
 import {User} from "../entities/User.js";
 
 
-export type PlatformEventWithoutUser = {
-    platform: Platforms;
-} & (NewMessageEvent | StartMessageEvent);
-export type PlatformEvent = PlatformEventWithoutUser & {
+export type PlatformEventCut = NewMessageEvent | StartMessageEvent;
+export type PlatformEvent = PlatformEventCut & {
     user: User;
     userState: UserStates;
+    platform: Platforms;
 }

@@ -5,7 +5,7 @@
   "license": "UNLICENCED",
   "description": "Chatbot for for messengers ",
   "scripts": {
-    "dev": "npx tsc-watch src/main.ts --noClear --onSuccess \"node ./dist/main.js\"",
+    "dev": "npx tsc-watch -p . --noClear --onSuccess \"node ./dist/main.js\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

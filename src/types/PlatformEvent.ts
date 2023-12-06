@@ -1,5 +1,5 @@
-import {NewMessageEvent} from "./Events/NewMessageEvent.js";
-import {StartMessageEvent} from "./Events/StartMessageEvent.js";
+import type {NewMessageEvent} from "./Events/NewMessageEvent.js";
+import type {StartMessageEvent} from "./Events/StartMessageEvent.js";
 import {Platforms} from "./Platforms.js";
 import {UserStates} from "./UserStates.js";
 import {User} from "../entities/User.js";

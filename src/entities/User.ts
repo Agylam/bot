@@ -1,12 +1,11 @@
-import {Entity, Column, BaseEntity, Generated} from "typeorm"
+import {Entity, Column, BaseEntity, Generated, PrimaryGeneratedColumn} from "typeorm"
 import {Platforms} from "../types/Platforms.js";
 import {UserRoles} from "../types/UserRoles.js";
 import {UserStates} from "../types/UserStates.js";
 
 @Entity()
 export class User extends BaseEntity{
-    @Column()
-    @Generated("uuid")
+    @PrimaryGeneratedColumn("uuid")
     uuid: string
 
     @Column({

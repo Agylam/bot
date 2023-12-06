@@ -2,8 +2,9 @@ import "dotenv/config"
 import "reflect-metadata"
 import {Unity} from "./classes/Unity.js";
 import {TelegramService} from "./services/TelegramService.js";
-import {HandlerTrigger} from "./types/HandlerTrigger";
-import {PlatformEventList} from "./types/PlatformEventList";
+import type {HandlerTrigger} from "./types/HandlerTrigger.js";
+import {PlatformEventList} from "./types/PlatformEventList.js";
+import {AppDataSource} from "./data-source.js";
 
 const handlers : HandlerTrigger[] = [
     {
@@ -12,4 +13,9 @@ const handlers : HandlerTrigger[] = [
     }
 ];
 
-const a = new Unity([TelegramService], handlers)
+AppDataSource.initialize()
+    .then(() => {
+        const a = new Unity([TelegramService], handlers)
+    })
+    .catch((error) => console.log(error))
+

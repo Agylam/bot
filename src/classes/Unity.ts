@@ -1,27 +1,29 @@
-import {HandlerManager} from "./HandlerManager.js";
-import {PlatformEvent} from "../types/PlatformEvent.js";
+import type {PlatformEvent} from "../types/PlatformEvent.js";
 import {BasicPlatformService} from "../services/BasicPlatformService.js";
-import {HandlerTrigger} from "../types/HandlerTrigger.js";
-import {UnityMethods} from "../types/UnityMethods.js";
+import type {HandlerTrigger} from "../types/HandlerTrigger.js";
+import type {UnityMethods} from "../types/UnityMethods.js";
 
 export class Unity {
-    private handlerManager = new HandlerManager();
-    private services: BasicPlatformService[];
+    private services: BasicPlatformService[] = [];
+    private triggers : HandlerTrigger[];
 
     constructor(services: (typeof BasicPlatformService)[], handlers : HandlerTrigger[]) {
-        this.services = services.map(Service => new Service())
-        this.services.map(service => service.registerEventCallback(this.newEvent))
+        this.services = services.map(Service => new Service());
+        this.triggers = handlers;
+        this.services.map(service => service.registerEventCallback(this.newEvent));
+
+        console.log("HANDLERS:",handlers)
+        console.log("THIS HANDLERS:",this.triggers)
 
         Promise.all(this.services.map(service => service.startService())).then(
             (values)=>{
                 const failedServiceIndex = values.indexOf(false);
                 if (failedServiceIndex !== -1){
-                    const failedServiceID = this.services[failedServiceIndex].platform;
+                    const failedServiceID = this.services[failedServiceIndex]?.platform;
                     console.error("Ошибка запуска сервиса с ID (Enum)", failedServiceID);
                     return;
                 }
-
-                handlers.map(handler => this.handlerManager.registerTrigger(handler))
+                console.log("Успешный запуск всех сервисов")
             },
             (error) => {
                 console.error("Ошибка (Unity):", error);
@@ -29,7 +31,10 @@ export class Unity {
         )
     }
 
-    newEvent(event : PlatformEvent, unityMethods: UnityMethods){
-        this.handlerManager.newEvent(event, unityMethods);
+    newEvent = (event : PlatformEvent, unityMethods: UnityMethods)=> {
+        const foundEvent = this.triggers.find(e=> e.type === event.type);
+        if (foundEvent !== undefined){
+            foundEvent.action(event, unityMethods);
+        }
     }
 }

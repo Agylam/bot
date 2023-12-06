@@ -2,7 +2,7 @@ import {Context, Telegraf} from 'telegraf'
 import {BasicPlatformService} from "./BasicPlatformService.js";
 import {Platforms} from "../types/Platforms.js";
 import {message} from "telegraf/filters";
-import {UnityMethods} from "../types/UnityMethods";
+import type {UnityMethods} from "../types/UnityMethods";
 
 interface AdditionContext extends Context {
     unityMethods: UnityMethods
@@ -10,20 +10,20 @@ interface AdditionContext extends Context {
 
 export class TelegramService extends BasicPlatformService{
     private bot: Telegraf<AdditionContext>;
-    readonly platform = Platforms.TELEGRAM;
-    readonly prefix = "/";
+    override platform = Platforms.TELEGRAM;
+    override prefix = "/";
 
     constructor() {
         super()
     }
 
-    async startService() {
+    override async startService() {
         try {
-            if (process.env.TELEGRAM_TOKEN === undefined){
+            if (process.env['TELEGRAM_TOKEN'] === undefined){
                 console.error("Ошибка: TELEGRAM_TOKEN не задан. Дальнейшая работа невозможна");
                 return false;
             }
-            this.bot = new Telegraf<AdditionContext>(process.env.TELEGRAM_TOKEN);
+            this.bot = new Telegraf<AdditionContext>(process.env['TELEGRAM_TOKEN']);
 
             this.bot.use((ctx, next)=>{
                 ctx.unityMethods = {
@@ -37,6 +37,8 @@ export class TelegramService extends BasicPlatformService{
                                 fullName: ctx.from.first_name + ctx.from.last_name,
                                 username: ctx.from.username
                             }
+                        }else{
+                            return undefined;
                         }
                     }
                 }
@@ -51,7 +53,7 @@ export class TelegramService extends BasicPlatformService{
                 }
             })
 
-            await this.bot.launch()
+            this.bot.launch().then()
 
             process.once('SIGINT', () => this.bot.stop('SIGINT'))
             process.once('SIGTERM', () => this.bot.stop('SIGTERM'))
@@ -63,7 +65,7 @@ export class TelegramService extends BasicPlatformService{
         return true;
     }
 
-    sendMessage(authorID: string, text: string) {
+    override sendMessage(authorID: string, text: string) {
         this.bot.telegram.sendMessage(authorID, text);
     }
 }

@@ -1,4 +1,4 @@
-import {PlatformEvent} from "./PlatformEvent.js";
-import {UnityMethods} from "./UnityMethods";
+import type {PlatformEvent} from "./PlatformEvent.js";
+import type {UnityMethods} from "./UnityMethods";
 
 export type Action = (event: PlatformEvent, unityMethods: UnityMethods) => void;

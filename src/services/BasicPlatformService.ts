@@ -1,10 +1,10 @@
 import {PlatformEventList} from "../types/PlatformEventList.js";
 import {Platforms} from "../types/Platforms.js";
-import {PlatformEvent, PlatformEventCut} from "../types/PlatformEvent.js";
+import type {PlatformEvent, PlatformEventCut} from "../types/PlatformEvent.js";
 import {User} from "../entities/User.js";
 import {AppDataSource} from "../data-source.js";
 import {UserStates} from "../types/UserStates.js";
-import {UnityMethods} from "../types/UnityMethods";
+import type {UnityMethods} from "../types/UnityMethods";
 
 export class BasicPlatformService {
     protected eventCallback: (trigger : PlatformEventCut, unityMethods: UnityMethods) => void;
@@ -24,7 +24,7 @@ export class BasicPlatformService {
     protected splitCmd(msg: string){
         if (!msg.startsWith(this.prefix)) return false;
         const args = msg.trim().split(/ +/g);
-        const cmd = args[0].slice(this.prefix.length).toLowerCase();
+        const cmd = args[0]?.slice(this.prefix.length).toLowerCase();
         return {cmd, args}
     }
     protected async updateUserState(authorID : string, newState: UserStates){
@@ -33,15 +33,23 @@ export class BasicPlatformService {
         await user.save();
     }
     protected async getUserByAuthorID(authorID : string) {
-        return await AppDataSource.getRepository(User).findOneOrFail({
-            where:{
+        let user = await AppDataSource.getRepository(User).findOne({
+            where: {
                 authorID: authorID,
                 platform: this.platform
             }
-        })
+        });
+        if(user !== null) return user;
+
+        user = new User();
+        user.authorID = authorID;
+        user.platform = this.platform;
+        await user.save();
+
+        return user;
     }
     protected async getAuthorIDByUserUUID(userUUID : string) {
-        return await AppDataSource.getRepository(User).findOneOrFail({
+        return await AppDataSource.getRepository(User).findOne({
             where:{
                 uuid: userUUID
             },
@@ -49,7 +57,7 @@ export class BasicPlatformService {
                 authorID: true
             }
         })
-            .then(user => user.authorID)
+            .then(user => user?.authorID)
     }
     protected callNewMessageHandler(msg: string, unityMethods: UnityMethods){
         this.eventCallback({

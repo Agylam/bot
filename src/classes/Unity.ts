@@ -12,9 +12,6 @@ export class Unity {
         this.triggers = handlers;
         this.services.map(service => service.registerEventCallback(this.newEvent));
 
-        console.log("HANDLERS:",handlers)
-        console.log("THIS HANDLERS:",this.triggers)
-
         Promise.all(this.services.map(service => service.startService())).then(
             (values)=>{
                 const failedServiceIndex = values.indexOf(false);

@@ -1,16 +1,12 @@
-import {Context, Telegraf} from 'telegraf'
+import { VK } from 'vk-io';
 import {BasicPlatformService} from "./BasicPlatformService.js";
 import {Platforms} from "../types/Platforms.js";
 import {message} from "telegraf/filters";
 import type {UnityMethods} from "../types/UnityMethods";
 
-interface AdditionContext extends Context {
-    unityMethods: UnityMethods
-}
-
-export class TelegramService extends BasicPlatformService{
-    private bot: Telegraf<AdditionContext>;
-    override platform = Platforms.TELEGRAM;
+export class VKService extends BasicPlatformService{
+    private bot: VK;
+    override platform = Platforms.VKONTAKTE;
     override prefix = "/";
 
     constructor() {
@@ -19,14 +15,16 @@ export class TelegramService extends BasicPlatformService{
 
     override async startService() {
         try {
-            if (process.env['TELEGRAM_TOKEN'] === undefined){
-                console.error("Ошибка: TELEGRAM_TOKEN не задан. Дальнейшая работа невозможна");
+            if (process.env['VKONTAKTE_TOKEN'] === undefined){
+                console.error("Ошибка: VKONTAKTE_TOKEN не задан. Дальнейшая работа невозможна");
                 return false;
             }
-            this.bot = new Telegraf<AdditionContext>(process.env['TELEGRAM_TOKEN']);
+            this.bot = new VK({
+                token: process.env['VKONTAKTE_TOKEN']
+            });
 
-            this.bot.use((ctx, next)=>{
-                ctx.unityMethods = {
+            this.bot.updates.use((ctx, next)=>{
+                ctx.state['unityMethods'] as UnityMethods = {
                     replyWithText: text => ctx.reply(text),
                     getAuthor: ()=>{
                         if(ctx.from !== undefined){
@@ -48,8 +46,8 @@ export class TelegramService extends BasicPlatformService{
             this.bot.start(ctx => this.callStartMessageHandler(ctx.unityMethods))
             this.bot.on(message('text'),ctx => {
                 const splitMsg = this.splitCmd(ctx.message.text);
-                if (splitMsg === false){
-                    this.callNewMessageHandler(ctx.message.text, ctx.unityMethods);
+                if (splitMsg !== false){
+
                 }
             })
 

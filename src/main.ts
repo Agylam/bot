@@ -1,7 +1,7 @@
 import "dotenv/config"
 import "reflect-metadata"
-import {Unity} from "./classes/Unity";
-import {TelegramService} from "./services/TelegramService";
+import {Unity} from "./classes/Unity.js";
+import {TelegramService} from "./services/TelegramService.js";
 import {HandlerTrigger} from "./types/HandlerTrigger";
 import {PlatformEventList} from "./types/PlatformEventList";
 

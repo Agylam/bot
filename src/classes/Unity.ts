@@ -1,8 +1,8 @@
 import {HandlerManager} from "./HandlerManager.js";
 import {PlatformEvent} from "../types/PlatformEvent.js";
-import {BasicPlatformService} from "../services/BasicPlatformService";
-import {HandlerTrigger} from "../types/HandlerTrigger";
-import {UnityMethods} from "../types/UnityMethods";
+import {BasicPlatformService} from "../services/BasicPlatformService.js";
+import {HandlerTrigger} from "../types/HandlerTrigger.js";
+import {UnityMethods} from "../types/UnityMethods.js";
 
 export class Unity {
     private handlerManager = new HandlerManager();

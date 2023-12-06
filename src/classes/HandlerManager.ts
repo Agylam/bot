@@ -1,6 +1,6 @@
 import {HandlerTrigger} from "../types/HandlerTrigger.js";
 import {PlatformEvent} from "../types/PlatformEvent.js";
-import {UnityMethods} from "../types/UnityMethods";
+import {UnityMethods} from "../types/UnityMethods.js";
 
 export class HandlerManager {
     private triggers : HandlerTrigger[];

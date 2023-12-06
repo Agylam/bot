@@ -5,7 +5,7 @@
   "license": "UNLICENCED",
   "description": "Chatbot for for messengers ",
   "scripts": {
-    "dev": "npx tsc-watch ./main.ts --outDir ./dist --onSuccess \"node ./dist/main.js\"",
+    "dev": "npx tsc-watch src/main.ts --noClear --onSuccess \"node ./dist/main.js\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -19,11 +19,15 @@
   "homepage": "https://github.com/Agylam/bot#readme",
   "type": "module",
   "dependencies": {
-    "@types/node": "^20.10.2",
     "dotenv": "^16.3.1",
     "pg": "^8.11.3",
     "reflect-metadata": "^0.1.13",
     "telegraf": "^4.15.2",
     "typeorm": "^0.3.17"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.3",
+    "tsc-watch": "^6.0.4",
+    "typescript": "^5.3.2"
   }
 }

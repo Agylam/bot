@@ -1,0 +1,39 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:13.3
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_DB: ${PGDATABASE}
+      POSTGRES_USER: ${PGUSER}
+      POSTGRES_PASSWORD: ${PGPASSWORD}
+      POSTGRES_PORT: ${PGPORT}
+      POSTGRES_DATA: ${PGDATA}
+    ports:
+      - "${PGPORT}:${PGPORT}"
+    volumes:
+      - ./dataDB:/var/lib/postgresql/data
+    user: root
+    healthcheck:
+      test: [ "CMD", "/usr/bin/pg_isready", "-U", "${PGUSER}" ]
+      interval: 10s
+      timeout: 1s
+      retries: 3
+      start_period: 30s
+  bot:
+    image: agylam/bot
+    environment:
+      PGDATABASE: ${PGDATABASE}
+      PGUSER: ${PGUSER}
+      PGPASSWORD: ${PGPASSWORD}
+      PGPORT: ${PGPORT}
+      PGHOST: postgres
+      TELEGRAM_TOKEN: ${TELEGRAM_TOKEN}
+    volumes:
+      - ./src:/app/src
+    build:
+      context: ./
+      dockerfile: ./dev.Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy

@@ -10,11 +10,14 @@
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
     "skipLibCheck": true,
-    "outDir": "build",
+    "outDir": "dist",
     "sourceMap": true
   },
   "include": [
     "src"
+  ],
+  "exclude": [
+    "dist"
   ],
   "watchOptions": {
     "watchFile": "fixedPollingInterval",
@@ -23,7 +26,7 @@
     "synchronousWatchDirectory": true,
     "excludeDirectories": [
       "**/node_modules",
-      "build"
+      "dist"
     ],
     "excludeFiles": [
       "build/fileWhichChangesOften.ts"

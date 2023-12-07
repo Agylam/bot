@@ -1,7 +1,7 @@
 import "dotenv/config"
 import "reflect-metadata"
-import {Unity} from "./classes/Unity.js";
-import {TelegramService} from "./services/TelegramService.js";
+import {Bot} from "./classes/Bot.js";
+import {TelegramService} from "./classes/TelegramService.js";
 import type {HandlerTrigger} from "./types/HandlerTrigger.js";
 import {PlatformEventList} from "./types/PlatformEventList.js";
 import {AppDataSource} from "./data-source.js";
@@ -16,7 +16,7 @@ const handlers : HandlerTrigger[] = [
 
 AppDataSource.initialize()
     .then(() => {
-        const a = new Unity([TelegramService], handlers)
+        const a = new Bot([TelegramService], handlers)
     })
     .catch((error) => console.log(error))
 

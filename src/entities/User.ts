@@ -1,21 +1,14 @@
-import {Entity, Column, BaseEntity, Generated, PrimaryGeneratedColumn} from "typeorm"
+import {Entity, Column, BaseEntity, Generated, PrimaryGeneratedColumn, PrimaryColumn} from "typeorm"
 import {Platforms} from "../types/Platforms.js";
 import {UserRoles} from "../types/UserRoles.js";
 import {UserStates} from "../types/UserStates.js";
 
 @Entity()
 export class User extends BaseEntity{
-    @PrimaryGeneratedColumn("uuid")
-    uuid: string
 
-    @Column({
-        type: "enum",
-        enum: Platforms
-    })
-    platform: Platforms;
-
-    @Column()
-    authorID: string;
+    /* Required */
+    @PrimaryColumn()
+    id: number;
 
     @Column({
         type: "enum",
@@ -30,4 +23,18 @@ export class User extends BaseEntity{
         default: UserStates.NONE
     })
     state: UserStates;
+
+    @Column({default: false})
+    enabledNotify: boolean;
+
+    @Column({default: 0})
+    notifyHour: number;
+
+    @Column({default: 0})
+    notifyMinute: number;
+
+
+    /* Non-required */
+    @Column({nullable: true})
+    cityId: number | null;
 }

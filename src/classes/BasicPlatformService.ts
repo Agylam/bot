@@ -4,11 +4,10 @@ import type {PlatformEvent, PlatformEventCut} from "../types/PlatformEvent.js";
 import {User} from "../entities/User.js";
 import {AppDataSource} from "../data-source.js";
 import {UserStates} from "../types/UserStates.js";
-import type {UnityMethods} from "../types/UnityMethods";
+import type {UnityMethods} from "../types/UnityMethods.js";
 
 export class BasicPlatformService {
     protected eventCallback: (trigger : PlatformEventCut, unityMethods: UnityMethods) => void;
-    platform: Platforms;
     prefix = "";
 
     /* General methods */
@@ -18,7 +17,7 @@ export class BasicPlatformService {
             if (author === undefined) throw new Error("Author is undefined");
 
             this.getUserByAuthorID(author.id)
-                .then(user => callback({...trigger, user, userState: user.state, platform: this.platform }, unityMethods))
+                .then(user => callback({...trigger, user, userState: user.state }, unityMethods))
         };
     }
     protected splitCmd(msg: string){

@@ -2,7 +2,7 @@ import {Context, Telegraf} from 'telegraf'
 import {BasicPlatformService} from "./BasicPlatformService.js";
 import {Platforms} from "../types/Platforms.js";
 import {message} from "telegraf/filters";
-import type {UnityMethods} from "../types/UnityMethods";
+import type {UnityMethods} from "../types/UnityMethods.js";
 
 interface AdditionContext extends Context {
     unityMethods: UnityMethods

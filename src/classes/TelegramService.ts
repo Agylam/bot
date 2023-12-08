@@ -3,10 +3,8 @@ import {BasicPlatformService} from "./BasicPlatformService.js";
 import {Platforms} from "../types/Platforms.js";
 import {message} from "telegraf/filters";
 import type {UnityMethods} from "../types/UnityMethods.js";
+import {PlatformEventList} from "../types/PlatformEventList.js";
 
-interface AdditionContext extends Context {
-    unityMethods: UnityMethods
-}
 
 export class TelegramService extends BasicPlatformService{
     private bot: Telegraf<AdditionContext>;
@@ -49,7 +47,10 @@ export class TelegramService extends BasicPlatformService{
             this.bot.on(message('text'),ctx => {
                 const splitMsg = this.splitCmd(ctx.message.text);
                 if (splitMsg === false){
-                    this.callNewMessageHandler(ctx.message.text, ctx.unityMethods);
+                    this.eventCallback({
+                        type: PlatformEventList.NEW_MESSAGE,
+                        text: ctx.message.text,
+                    }, ctx)
                 }
             })
 
@@ -64,6 +65,8 @@ export class TelegramService extends BasicPlatformService{
 
         return true;
     }
+
+
 
     override sendMessage(authorID: string, text: string) {
         this.bot.telegram.sendMessage(authorID, text);

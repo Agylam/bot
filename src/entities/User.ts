@@ -1,5 +1,4 @@
 import {Entity, Column, BaseEntity, Generated, PrimaryGeneratedColumn, PrimaryColumn} from "typeorm"
-import {Platforms} from "../types/Platforms.js";
 import {UserRoles} from "../types/UserRoles.js";
 import {UserStates} from "../types/UserStates.js";
 

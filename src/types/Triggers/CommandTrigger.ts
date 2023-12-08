@@ -1,9 +1,6 @@
 import {PlatformEventList} from "../PlatformEventList.js";
 
-export type NewMessageEvent = {
+export type CommandTrigger = {
     type: PlatformEventList.NEW_MESSAGE;
-    isCommand: false;
-    cmd: "";
-    arguments: [];
     text: string;
 }

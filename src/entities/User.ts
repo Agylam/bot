@@ -1,6 +1,6 @@
-import {Entity, Column, BaseEntity, Generated, PrimaryGeneratedColumn, PrimaryColumn} from "typeorm"
-import {UserRoles} from "../types/UserRoles.js";
+import {Entity, Column, BaseEntity, PrimaryColumn} from "typeorm"
 import {UserStates} from "../types/UserStates.js";
+import {SupportRegions} from "../types/SupportRegions.js";
 
 @Entity()
 export class User extends BaseEntity{
@@ -8,13 +8,6 @@ export class User extends BaseEntity{
     /* Required */
     @PrimaryColumn()
     id: number;
-
-    @Column({
-        type: "enum",
-        enum: UserRoles,
-        default: UserRoles.DEFAULT_USER
-    })
-    role: UserRoles;
 
     @Column({
         type: "enum",
@@ -35,5 +28,9 @@ export class User extends BaseEntity{
 
     /* Non-required */
     @Column({nullable: true})
-    cityId: number | null;
+    cityId?: number;
+
+    @Column({nullable: true})
+    regionId?: SupportRegions;
+
 }

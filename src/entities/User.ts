@@ -1,6 +1,5 @@
 import {Entity, Column, BaseEntity, PrimaryColumn} from "typeorm"
 import {UserStates} from "../types/UserStates.js";
-import {SupportRegions} from "../types/SupportRegions.js";
 
 @Entity()
 export class User extends BaseEntity{
@@ -29,8 +28,4 @@ export class User extends BaseEntity{
     /* Non-required */
     @Column({nullable: true})
     cityId?: number;
-
-    @Column({nullable: true})
-    regionId?: SupportRegions;
-
 }

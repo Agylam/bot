@@ -17,7 +17,6 @@ const startBot = async () => {
         bot = new Telegraf<AdditionContext>(process.env['TELEGRAM_TOKEN']);
         bot.use(async (ctx, next) => {
             try{
-
                 if (ctx.from !== undefined) {
                     const user = await AppDataSource.getRepository(User).findOne({
                         where: {

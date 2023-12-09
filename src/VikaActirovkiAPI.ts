@@ -15,16 +15,16 @@ interface UgraActirovkiStatus {
         name: string;
         id: number;
     },
+    shift: 1 | 2;
+    fullMessage?: string;
     status: boolean,
     class_range?: {
         from: 1;
         to: number;
     },
-    temperature?: string;
+    temperature?: string; // "C"
     wind_speed?: string; // "м/с"
-    shift: 1 | 2;
-    fullMessage?: string;
-}
+};
 
 
 interface VikaActirovkiCities {

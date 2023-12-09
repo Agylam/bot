@@ -1,3 +1,3 @@
-export const sadNotify = (full_message: string) => {
-    return '❌ К сожалению, актировки нет.  __'+full_message+'__'
+export const sadNotifyFull = (temp?: string, wind?: string) => {
+    return `❌ Актировки нет!\nТемпература ${temp ||"Неизвестно"}°C, ветер ${wind ||"Неизвестно"} м/сек.`
 }

@@ -79,7 +79,8 @@ const startBot = async () => {
             ctx.user.shift = shift;
             await ctx.user.save();
 
-            await ctx.reply(niceToMeet(shift)).then(()=>menuAction(ctx))
+            await ctx.reply(niceToMeet(shift));
+            menuAction(ctx);
         });
 
         bot.action(/verify_class_(\d+)/, async (ctx) => {

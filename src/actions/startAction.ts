@@ -3,12 +3,11 @@ import {sadNotify} from "../langs/sadNotify.js";
 import {sadNotifyFull} from "../langs/sadNotifyFull.js";
 import {happyNotify} from "../langs/happyNotify.js";
 import {menuText} from "../langs/menuText.js";
+import {startText} from "../langs/startText.js";
+import {menuAction} from "./menuAction.js";
 
 export const startAction: Action = async (ctx) => {
     if(ctx.from === undefined) return;
-    await ctx.reply(sadNotify(4,"-24","1"))
-    await ctx.reply(sadNotifyFull())
-    await ctx.reply(sadNotifyFull("-24","1"))
-    await ctx.reply(happyNotify(4,"-24","1"))
-    await ctx.reply(menuText())
+    await ctx.reply(startText(ctx.from.first_name));
+    menuAction(ctx);
 }

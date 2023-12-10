@@ -4,6 +4,8 @@
     Депинформтехнологий Югры.....
 
  */
+import {UserShifts} from "./types/UserShifts.js";
+
 const classRangeRegex = /с 1 по (\d{1,2})/gm;
 
 export interface UgraCities {
@@ -15,7 +17,7 @@ interface UgraActirovkiStatus {
         name: string;
         id: number;
     },
-    shift: 1 | 2;
+    shift: UserShifts;
     fullMessage?: string;
     status: boolean,
     class_range?: {
@@ -69,7 +71,7 @@ export class VikaActirovkiAPI {
         return Object.fromEntries(new Map(citiesArray));
     }
 
-    async getActirovkaStatus(city_id: number, shift: 1 | 2): Promise<UgraActirovkiStatus> {
+    async getActirovkaStatus(city_id: number, shift: UserShifts): Promise<UgraActirovkiStatus> {
         const cityName = this.cities[city_id];
         if (cityName === undefined) throw new Error("Unknown cityId: " + city_id);
         const currentRecords: VikaActirovkiStatus[] = await fetch(this.API_URL + "?action=getCurrentRecord&city_id=" + city_id)

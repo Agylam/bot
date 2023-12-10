@@ -19,6 +19,8 @@ import type {ClassRanges} from "./types/ClassRanges.js";
 import {shiftQuestion} from "./langs/shiftQuestion.js";
 import {shiftKeyboard} from "./keyboards/shiftKeyboard.js";
 import {classQuestion} from "./langs/classQuestion.js";
+import {niceToMeet} from "./langs/niceToMeet.js";
+import type {UserShifts} from "./types/UserShifts.js";
 
 let bot: Telegraf<AdditionContext>
 const vikaApi = new VikaActirovkiAPI();
@@ -67,16 +69,17 @@ const startBot = async () => {
 
         bot.action(/verify_shift_(1|2)/, async (ctx) => {
             await ctx.answerCbQuery();
-            const shift : ClassRanges = Number(ctx.match[1]);
+            const shift : UserShifts = Number(ctx.match[1]);
 
             if(shift < 1 || shift > 2) {
                 await ctx.reply(notFoundTryAgainText());
                 return;
             }
 
+            ctx.user.shift = shift;
             await ctx.user.save();
 
-            await ctx.reply("", shiftKeyboard()).then(()=>menuAction(ctx))
+            await ctx.reply(niceToMeet(shift)).then(()=>menuAction(ctx))
         });
 
         bot.action(/verify_class_(\d+)/, async (ctx) => {

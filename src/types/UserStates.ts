@@ -1,3 +1,4 @@
 export enum UserStates {
-    NONE
+    NONE,
+    WAIT_CITY
 }

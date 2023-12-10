@@ -1,12 +1,27 @@
 import "dotenv/config"
 import "reflect-metadata"
 import {AppDataSource} from "./data-source.js";
-import {Markup, Telegraf} from "telegraf";
+import {Telegraf} from "telegraf";
 import {User} from "./entities/User.js";
 import {startAction} from "./actions/startAction.js";
 import type {AdditionContext} from "./types/AdditionContext.js";
+import {VikaActirovkiAPI} from "./VikaActirovkiAPI.js";
+import {menuAction} from "./actions/menuAction.js";
+import {updateSettingAction} from "./actions/updateSettingAction.js";
+import {message} from "telegraf/filters";
+import {checkCityKeyboard} from "./keyboards/checkCityKeyboard.js";
+import {deflateRaw} from "zlib";
+import {UserStates} from "./types/UserStates.js";
+import {classKeyboard} from "./keyboards/classKeyboard.js";
+import {notFoundTryAgainText} from "./langs/NotFoundTryAgainText.js";
+import {checkCityText} from "./langs/checkCityText.js";
+import type {ClassRanges} from "./types/ClassRanges.js";
+import {shiftQuestion} from "./langs/shiftQuestion.js";
+import {shiftKeyboard} from "./keyboards/shiftKeyboard.js";
+import {classQuestion} from "./langs/classQuestion.js";
 
 let bot: Telegraf<AdditionContext>
+const vikaApi = new VikaActirovkiAPI();
 
 const startBot = async () => {
     try {
@@ -31,6 +46,7 @@ const startBot = async () => {
                         ctx.user = user;
                     }
                 }
+                ctx.vikaApi = vikaApi;
                 return next();
             }catch (e){
                 console.error("Ошибка", e)
@@ -40,7 +56,86 @@ const startBot = async () => {
 
         /* Handlers */
 
-        bot.start(startAction)
+        bot.start(startAction);
+
+
+        bot.command("menu", menuAction);
+
+
+        bot.action("menu", menuAction);
+        bot.action("update_setting", updateSettingAction);
+
+        bot.action(/verify_shift_(1|2)/, async (ctx) => {
+            await ctx.answerCbQuery();
+            const shift : ClassRanges = Number(ctx.match[1]);
+
+            if(shift < 1 || shift > 2) {
+                await ctx.reply(notFoundTryAgainText());
+                return;
+            }
+
+            await ctx.user.save();
+
+            await ctx.reply("", shiftKeyboard()).then(()=>menuAction(ctx))
+        });
+
+        bot.action(/verify_class_(\d+)/, async (ctx) => {
+            await ctx.answerCbQuery();
+            const classRange : ClassRanges = Number(ctx.match[1]);
+
+            if(classRange < 0 || classRange > 2) {
+                await ctx.reply(notFoundTryAgainText());
+                return;
+            }
+
+            ctx.user.classRange = classRange;
+            await ctx.user.save();
+
+            await ctx.reply(shiftQuestion(classRange), shiftKeyboard())
+
+        });
+
+        bot.action(/verify_city_(\d+)/, async (ctx) => {
+            await ctx.answerCbQuery();
+
+            const cityId = Number(ctx.match[1]);
+            const cityName = ctx.vikaApi.cities[Number(ctx.match[1])];
+            if(cityName === undefined){
+                await ctx.reply(notFoundTryAgainText());
+                return;
+            }
+
+            console.log("AS", ctx.match, cityId)
+
+            ctx.user.cityId = Number(cityId);
+            ctx.user.state = UserStates.NONE;
+            await ctx.user.save();
+
+            await ctx.reply(classQuestion(cityName), classKeyboard())
+
+        });
+
+        bot.on(message("text"), async (ctx) => {
+            if(ctx.user.state === UserStates.WAIT_CITY){
+                const inputtedCityLower = ctx.message?.text.toLowerCase()
+                const cityIndex = Object.values(ctx.vikaApi.cities).findIndex(c => c.toLowerCase().includes(inputtedCityLower));
+                if(cityIndex === -1){
+                    await ctx.reply(notFoundTryAgainText());
+                    return;
+                }
+
+                const cityId = Object.keys(ctx.vikaApi.cities)[cityIndex];
+                const cityName = Object.values(ctx.vikaApi.cities)[cityIndex];
+
+
+                if(cityId === undefined){
+                    await ctx.reply(notFoundTryAgainText());
+                    return;
+                }
+
+                await ctx.reply(checkCityText(cityName), checkCityKeyboard(cityId))
+            }
+        })
 
 
 

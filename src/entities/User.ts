@@ -1,5 +1,6 @@
 import {Entity, Column, BaseEntity, PrimaryColumn} from "typeorm"
 import {UserStates} from "../types/UserStates.js";
+import {ClassRanges} from "../types/ClassRanges.js";
 
 @Entity()
 export class User extends BaseEntity{
@@ -28,4 +29,14 @@ export class User extends BaseEntity{
     /* Non-required */
     @Column({nullable: true})
     cityId?: number;
+
+    @Column({
+        nullable: true,
+        type: "enum",
+        enum: ClassRanges
+    })
+    classRange?: number;
+
+    @Column({nullable: true})
+    shift?: number;
 }

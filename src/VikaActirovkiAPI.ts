@@ -5,6 +5,7 @@
 
  */
 import {UserShifts} from "./types/UserShifts.js";
+import type {ClassRanges} from "./types/ClassRanges.js";
 
 const classRangeRegex = /с 1 по (\d{1,2})/gm;
 
@@ -23,6 +24,7 @@ interface UgraActirovkiStatus {
     class_range?: {
         from: 1;
         to: number;
+        level: ClassRanges;
     },
     temperature?: string; // "C"
     wind_speed?: string; // "м/с"
@@ -97,11 +99,14 @@ export class VikaActirovkiAPI {
                     throw new Error("Unexpected classRange: " + record.classRange + " cityId: " + city_id);
                 }
 
+                const classRangeTo = Number(classRangeRegexExec[1]);
+                const classRangeLevel = classRangeTo > 4 ? (classRangeTo > 8 ? 2 : 1) : 0
 
                 response.status = true;
                 response.class_range = {
                     from: 1,
-                    to: Number(classRangeRegexExec[1])
+                    to: classRangeTo,
+                    level: classRangeLevel
                 };
                 response.temperature = record.weather.temperature;
                 response.wind_speed = record.weather.windSpeed;

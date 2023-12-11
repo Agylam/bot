@@ -43,11 +43,11 @@ const startBot = async () => {
                     if (user === null) {
                         ctx.user = new User();
                         ctx.user.id = ctx.from.id;
-                        ctx.user.username = ctx.from.username;
-                        await ctx.user.save();
                     } else {
                         ctx.user = user;
                     }
+                    ctx.user.username = ctx.from.username;
+                    await ctx.user.save();
                 }
                 ctx.vikaApi = vikaApi;
                 return next();

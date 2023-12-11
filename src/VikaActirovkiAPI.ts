@@ -13,14 +13,14 @@ export interface UgraCities {
     [id: number]: string;
 }
 
-interface UgraActirovkiStatus {
+export interface UgraActirovkiStatus {
     city: {
         name: string;
         id: number;
     },
     shift: UserShifts;
     fullMessage?: string;
-    status: boolean,
+    status?: boolean,
     class_range?: {
         from: 1;
         to: number;
@@ -37,20 +37,20 @@ interface VikaActirovkiCities {
 }
 
 interface VikaActirovkiStatus {
-    id: string;
-    city: string;
-    shift: number;
-    classRange: string | null;
-    fullMessage: string;
-    createDatetime: string | null;
-    weather?: {
-        temperature: string;
-        windSpeed: string;
-        datetimeReceiving: string;
+    ID: string;
+    CITY: string;
+    SHIFT: number;
+    CLASS_RANGE: string | null;
+    FULL_MESSAGE: string;
+    CREATE_DATETIME: string | null;
+    WEATHER?: {
+        TEMPERATURE: string;
+        WIND_SPEED: string;
+        DATETIME_RECEIVING: string;
     };
-    threshold?: {
-        temperature: number;
-        wind: number;
+    THRESHOLD?: {
+        TEMPERATURE: number;
+        WIND: number;
     };
 }
 
@@ -66,6 +66,7 @@ export class VikaActirovkiAPI {
         const citiesApi: VikaActirovkiCities[] = await fetch(this.API_URL + "?action=getCityList")
             .then(r => r.json())
             .then(r => r.result.response)
+
 
         const citiesArray = citiesApi.map((city) => [Number(city.ID), city.NAME]);
 
@@ -85,18 +86,18 @@ export class VikaActirovkiAPI {
                 id: city_id,
                 name: cityName
             },
-            status: false,
             shift: shift
         }
 
-        const record = currentRecords.find(r => r.shift === shift);
+        const record = currentRecords.find(r => r.SHIFT === shift);
 
         if (record !== undefined) {
-            response.fullMessage = record.fullMessage;
-            if (record.classRange !== null && record.weather !== undefined) {
-                const classRangeRegexExec = classRangeRegex.exec(record.classRange)
+            response.fullMessage = record.FULL_MESSAGE;
+            if (record.CLASS_RANGE !== null && record.WEATHER !== undefined) {
+                classRangeRegex.lastIndex = 0;
+                const classRangeRegexExec = classRangeRegex.exec(record.CLASS_RANGE)
                 if (classRangeRegexExec === null) {
-                    throw new Error("Unexpected classRange: " + record.classRange + " cityId: " + city_id);
+                    throw new Error("Unexpected classRange: " + record.CLASS_RANGE + " cityId: " + city_id);
                 }
 
                 const classRangeTo = Number(classRangeRegexExec[1]);
@@ -108,11 +109,13 @@ export class VikaActirovkiAPI {
                     to: classRangeTo,
                     level: classRangeLevel
                 };
-                response.temperature = record.weather.temperature;
-                response.wind_speed = record.weather.windSpeed;
+                response.temperature = record.WEATHER.TEMPERATURE;
+                response.wind_speed = record.WEATHER.WIND_SPEED;
+            }else{
+                response.status = false;
             }
         }
-
+        console.log("Отправил данные по API", response)
         return response;
     }
 }

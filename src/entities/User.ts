@@ -9,6 +9,9 @@ export class User extends BaseEntity{
     @PrimaryColumn()
     id: number;
 
+    @Column({nullable: true})
+    username?: string;
+
     @Column({
         type: "enum",
         enum: UserStates,
@@ -28,15 +31,15 @@ export class User extends BaseEntity{
 
     /* Non-required */
     @Column({nullable: true})
-    cityId?: number;
+    cityId: number;
 
     @Column({
         nullable: true,
         type: "enum",
         enum: ClassRanges
     })
-    classRange?: number;
+    classRange: number;
 
     @Column({nullable: true})
-    shift?: number;
+    shift: number;
 }

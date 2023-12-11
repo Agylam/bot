@@ -10,7 +10,6 @@ import {menuAction} from "./actions/menuAction.js";
 import {updateSettingAction} from "./actions/updateSettingAction.js";
 import {message} from "telegraf/filters";
 import {checkCityKeyboard} from "./keyboards/checkCityKeyboard.js";
-import {deflateRaw} from "zlib";
 import {UserStates} from "./types/UserStates.js";
 import {classKeyboard} from "./keyboards/classKeyboard.js";
 import {notFoundTryAgainText} from "./langs/NotFoundTryAgainText.js";
@@ -21,6 +20,7 @@ import {shiftKeyboard} from "./keyboards/shiftKeyboard.js";
 import {classQuestion} from "./langs/classQuestion.js";
 import {niceToMeet} from "./langs/niceToMeet.js";
 import type {UserShifts} from "./types/UserShifts.js";
+import {actirovkaAction} from "./actions/actirovkaAction.js";
 
 let bot: Telegraf<AdditionContext>
 const vikaApi = new VikaActirovkiAPI();
@@ -66,6 +66,7 @@ const startBot = async () => {
 
         bot.action("menu", menuAction);
         bot.action("update_setting", updateSettingAction);
+        bot.action("actirovka_status", actirovkaAction)
 
         bot.action(/verify_shift_(1|2)/, async (ctx) => {
             await ctx.answerCbQuery();

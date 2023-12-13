@@ -24,6 +24,8 @@ import {actirovkaAction} from "./actions/actirovkaAction.js";
 import {getCityNameByGeo} from "./getCityNameByGeo.js";
 import {checkCityAction} from "./actions/checkCityAction.js";
 import {notifyMenuAction} from "./actions/notifyMenuAction.js";
+import {notifyKeyboard} from "./keyboards/notifyKeyboard.js";
+import {notifyMenu} from "./langs/notifyMenu.js";
 
 let bot: Telegraf<AdditionContext>
 const vikaApi = new VikaActirovkiAPI();
@@ -40,6 +42,8 @@ const startBot = async () => {
         }
         bot = new Telegraf<AdditionContext>(process.env['TELEGRAM_TOKEN']);
         bot.use(async (ctx, next) => {
+            console.log(ctx.message,ctx.reply);
+
             try{
                 if (ctx.from !== undefined) {
                     const user = await AppDataSource.getRepository(User).findOne({
@@ -76,6 +80,24 @@ const startBot = async () => {
         bot.action("update_setting", updateSettingAction);
         bot.action("actirovka_status", actirovkaAction);
         bot.action("notify_settings", notifyMenuAction);
+
+
+        bot.action(/notify_(on|off)/, async (ctx, next) => {
+            await ctx.answerCbQuery();
+
+            if(ctx.match[1] === undefined){
+                await ctx.reply(notFoundTryAgainText());
+            }else{
+                ctx.user.enabledNotify = ctx.match[1] === "on";
+                await ctx.user.save();
+                await ctx.editMessageText(
+                    notifyMenu(ctx.user.enabledNotify),
+                    notifyKeyboard(ctx.user.enabledNotify)
+                );
+            }
+
+            return await next();
+        });
 
 
         bot.action(/verify_shift_(1|2)/, async (ctx) => {

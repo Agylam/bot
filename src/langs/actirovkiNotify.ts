@@ -11,5 +11,10 @@ export const actirovkiNotify = (actirovkiStatus : UgraActirovkiStatus, user: Use
     }else{
         result = `❌ Актировки нет!`; // Блин, актировки нет...
     }
-    return result + `\nТемпература ${actirovkiStatus.temperature || "Неизвестно"} °C Ветер ${actirovkiStatus.wind_speed || "Неизвестно"} м/сек.`;
+    if(actirovkiStatus.temperature === undefined || actirovkiStatus.wind_speed === undefined){
+        result += `\n\nВремя и ветер: Неизвестно`;
+    }else{
+        result += `\n\nВремя и ветер: ${actirovkiStatus.temperature}°C, ${actirovkiStatus.wind_speed} м/с`;
+    }
+    return result;
 }

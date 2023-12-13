@@ -1,6 +1,8 @@
 import type {Action} from "../types/Action.js";
 import {menuAction} from "./menuAction.js";
 import {actirovkiNotify} from "../langs/actirovkiNotify.js";
+import {toMenuKeyboard} from "../keyboards/toMenuKeyboard.js";
+import {startKeyboard} from "../keyboards/startKeyboard.js";
 
 export const actirovkaAction: Action = async (ctx, next) => {
     await ctx.answerCbQuery();
@@ -12,16 +14,16 @@ export const actirovkaAction: Action = async (ctx, next) => {
 
             console.log("A", actirovkaStatus)
 
-            await ctx.reply(actirovkiNotify(actirovkaStatus, user));
+            await ctx.reply(actirovkiNotify(actirovkaStatus, user), toMenuKeyboard());
         }else {
-            await ctx.reply("Мы не до конца с вами знакомы. Возвращайтесь и я обязательно тебе подскажу.");
+            await ctx.reply("Мы не до конца с вами знакомы. Познакомимся?", startKeyboard());
         }
     }catch (e) {
-        await ctx.reply("Внутренняя ошибка. Обратитесь к администрации бота.");
+        await ctx.reply("Внутренняя ошибка. Обратись к администрации бота.");
         console.error("Ошибка. actirovkaAction: ", e)
+        menuAction(ctx);
     }
 
-    menuAction(ctx);
     if(next !== undefined)
         return await next();
 }

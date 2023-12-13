@@ -29,6 +29,7 @@ services:
       PGPORT: ${PGPORT}
       PGHOST: postgres
       TELEGRAM_TOKEN: ${TELEGRAM_TOKEN}
+      DADATA_TOKEN: ${DADATA_TOKEN}
     volumes:
       - ./src:/app/src
     build:

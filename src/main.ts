@@ -1,7 +1,7 @@
 import "dotenv/config"
 import "reflect-metadata"
 import {AppDataSource} from "./data-source.js";
-import {Telegraf} from "telegraf";
+import {Markup, Telegraf} from "telegraf";
 import {User} from "./entities/User.js";
 import {startAction} from "./actions/startAction.js";
 import type {AdditionContext} from "./types/AdditionContext.js";
@@ -21,6 +21,9 @@ import {classQuestion} from "./langs/classQuestion.js";
 import {niceToMeet} from "./langs/niceToMeet.js";
 import type {UserShifts} from "./types/UserShifts.js";
 import {actirovkaAction} from "./actions/actirovkaAction.js";
+import {getCityNameByGeo} from "./getCityNameByGeo.js";
+import {checkCityAction} from "./actions/checkCityAction.js";
+import {notifyMenuAction} from "./actions/notifyMenuAction.js";
 
 let bot: Telegraf<AdditionContext>
 const vikaApi = new VikaActirovkiAPI();
@@ -29,6 +32,10 @@ const startBot = async () => {
     try {
         if (process.env['TELEGRAM_TOKEN'] === undefined) {
             console.error("Ошибка: TELEGRAM_TOKEN не задан. Дальнейшая работа невозможна");
+            return;
+        }
+        if (process.env['DADATA_TOKEN'] === undefined) {
+            console.error("Ошибка: DADATA_TOKEN не задан. Дальнейшая работа невозможна");
             return;
         }
         bot = new Telegraf<AdditionContext>(process.env['TELEGRAM_TOKEN']);
@@ -67,7 +74,9 @@ const startBot = async () => {
 
         bot.action("menu", menuAction);
         bot.action("update_setting", updateSettingAction);
-        bot.action("actirovka_status", actirovkaAction)
+        bot.action("actirovka_status", actirovkaAction);
+        bot.action("notify_settings", notifyMenuAction);
+
 
         bot.action(/verify_shift_(1|2)/, async (ctx) => {
             await ctx.answerCbQuery();
@@ -81,7 +90,7 @@ const startBot = async () => {
             ctx.user.shift = shift;
             await ctx.user.save();
 
-            await ctx.reply(niceToMeet(shift));
+            await ctx.reply(niceToMeet(shift), Markup.removeKeyboard());
             menuAction(ctx);
         });
 
@@ -121,30 +130,15 @@ const startBot = async () => {
 
         });
 
-        bot.on(message("text"), async (ctx) => {
-            if(ctx.user.state === UserStates.WAIT_CITY){
-                const inputtedCityLower = ctx.message?.text.toLowerCase()
-                const cityIndex = Object.values(ctx.vikaApi.cities).findIndex(c => c.toLowerCase().includes(inputtedCityLower));
-                if(cityIndex === -1){
-                    await ctx.reply(notFoundTryAgainText());
-                    return;
-                }
-
-                const cityId = Object.keys(ctx.vikaApi.cities)[cityIndex];
-                const cityName = Object.values(ctx.vikaApi.cities)[cityIndex];
-
-
-                if(cityId === undefined){
-                    await ctx.reply(notFoundTryAgainText());
-                    return;
-                }
-
-                await ctx.reply(checkCityText(cityName), checkCityKeyboard(cityId))
-            }
+        bot.on(message("location"), async (ctx)=>{
+            const loc = ctx.message.location;
+            ctx.city = await getCityNameByGeo(loc.latitude, loc.longitude);
+            // @ts-ignore
+            await checkCityAction(ctx);
         })
 
-
-
+        // @ts-ignore
+        bot.on(message("text"), checkCityAction)
 
         bot.launch().then()
 

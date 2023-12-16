@@ -383,6 +383,18 @@ node-fetch@^3.3.1:
     fetch-blob "^3.1.4"
     formdata-polyfill "^4.0.10"
 
+ntp-packet-parser@^0.3.0:
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/ntp-packet-parser/-/ntp-packet-parser-0.3.1.tgz#202c7e255bbef87d8fa98d71ba90a5d4f9cafd6d"
+  integrity sha512-bzg5oAy4zNrsyFkGPBNCG2EY63mTFOVdndWpakePs37oSZgaKe+l9HuVGn9oR4IfYcp0d9vYXVPDY36rW8CwTQ==
+
+ntp-time-sync@^0.3.1:
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/ntp-time-sync/-/ntp-time-sync-0.3.1.tgz#b0a6b51e236879f46d73ba17a3d6fdaa2b08eec0"
+  integrity sha512-j0UBn82TPv7zBmhGdFXX15Gu1YO6Fehf3B+2UHSjhltrGjlvWjmQ4W9bKqGCAkLF+B9tn2014mxc9NaCop+WcQ==
+  dependencies:
+    ntp-packet-parser "^0.3.0"
+
 object-assign@^4.0.1:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/object-assign/-/object-assign-4.1.1.tgz#2109adc7965887cfc05cbbd442cac8bfbb360863"

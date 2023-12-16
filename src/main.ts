@@ -9,11 +9,10 @@ import {VikaActirovkiAPI} from "./VikaActirovkiAPI.js";
 import {menuAction} from "./actions/menuAction.js";
 import {updateSettingAction} from "./actions/updateSettingAction.js";
 import {message} from "telegraf/filters";
-import {checkCityKeyboard} from "./keyboards/checkCityKeyboard.js";
 import {UserStates} from "./types/UserStates.js";
 import {classKeyboard} from "./keyboards/classKeyboard.js";
 import {notFoundTryAgainText} from "./langs/NotFoundTryAgainText.js";
-import {checkCityText} from "./langs/checkCityText.js";
+import { NtpTimeSync } from 'ntp-time-sync';
 import type {ClassRanges} from "./types/ClassRanges.js";
 import {shiftQuestion} from "./langs/shiftQuestion.js";
 import {shiftKeyboard} from "./keyboards/shiftKeyboard.js";
@@ -27,8 +26,27 @@ import {notifyMenuAction} from "./actions/notifyMenuAction.js";
 import {notifyKeyboard} from "./keyboards/notifyKeyboard.js";
 import {notifyMenu} from "./langs/notifyMenu.js";
 
-let bot: Telegraf<AdditionContext>
+let bot: Telegraf<AdditionContext>;
+
 const vikaApi = new VikaActirovkiAPI();
+const timeSync = NtpTimeSync.getInstance();
+
+const getTime = async () => {
+    let now = new Date();
+    try {
+        const ntpTime = await timeSync.getTime();
+        now = ntpTime.now;
+    } catch (e) {
+        console.error('NTP', e);
+    }
+    const hour = now.getHours();
+    const minute = now.getMinutes();
+    const seconds = now.getSeconds();
+    const day = now.getDay();
+
+    console.log({ hour, minute, seconds, day });
+    return { hour, minute, seconds, day };
+};
 
 const startBot = async () => {
     try {
@@ -41,6 +59,7 @@ const startBot = async () => {
             return;
         }
         bot = new Telegraf<AdditionContext>(process.env['TELEGRAM_TOKEN']);
+
         bot.use(async (ctx, next) => {
             console.log(ctx.message,ctx.reply);
 
@@ -81,7 +100,7 @@ const startBot = async () => {
         bot.action("actirovka_status", actirovkaAction);
         bot.action("notify_settings", notifyMenuAction);
 
-
+        /* Включение и отключение уведомлений */
         bot.action(/notify_(on|off)/, async (ctx, next) => {
             await ctx.answerCbQuery();
 
@@ -99,7 +118,7 @@ const startBot = async () => {
             return await next();
         });
 
-
+        // Подтверждение смены при знакомстве
         bot.action(/verify_shift_(1|2)/, async (ctx) => {
             await ctx.answerCbQuery();
             const shift : UserShifts = Number(ctx.match[1]);
@@ -116,6 +135,8 @@ const startBot = async () => {
             menuAction(ctx);
         });
 
+
+        // Подтверждение выбора класса при знакомстве
         bot.action(/verify_class_(\d+)/, async (ctx) => {
             await ctx.answerCbQuery();
             const classRange : ClassRanges = Number(ctx.match[1]);
@@ -132,6 +153,7 @@ const startBot = async () => {
 
         });
 
+        // Подтверждение выбора города при знакомстве
         bot.action(/verify_city_(\d+)/, async (ctx) => {
             await ctx.answerCbQuery();
 
@@ -152,6 +174,7 @@ const startBot = async () => {
 
         });
 
+        // Обработка города по геолокации
         bot.on(message("location"), async (ctx)=>{
             const loc = ctx.message.location;
             ctx.city = await getCityNameByGeo(loc.latitude, loc.longitude);
@@ -159,6 +182,7 @@ const startBot = async () => {
             await checkCityAction(ctx);
         })
 
+        // Обработка города по его названию
         // @ts-ignore
         bot.on(message("text"), checkCityAction)
 
@@ -168,6 +192,12 @@ const startBot = async () => {
         process.once('SIGTERM', () => bot.stop('SIGTERM'))
     } catch (e) {
         console.error("Ошибка (TelegramService): ", e);
+    }
+
+    try {
+
+    }catch (e) {
+
     }
 }
 

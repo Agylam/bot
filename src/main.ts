@@ -31,6 +31,12 @@ let bot: Telegraf<AdditionContext>;
 const vikaApi = new VikaActirovkiAPI();
 const timeSync = NtpTimeSync.getInstance();
 
+
+const timeCheck = 36000000;
+const firstShiftTime = [6,10];
+const secondShiftTime = [11,30];
+
+
 const getTime = async () => {
     let now = new Date();
     try {
@@ -194,11 +200,30 @@ const startBot = async () => {
         console.error("Ошибка (TelegramService): ", e);
     }
 
-    try {
+    // ВНИМАНИЕ, ГОВНОКОД !!!
+    setInterval(async (bot)=>{
+        try {
+            const {hour, minute} = await getTime();
+            let shift: 1|2;
+            if(hour === firstShiftTime[0] && minute === firstShiftTime[1]){
+                shift = 1;
+            }else if(hour === secondShiftTime[0] && minute === secondShiftTime[1]){
+                shift = 2;
+            }else{
+                return;
+            }
+            const users = await User.getByShift(shift);
 
-    }catch (e) {
+            const cityIds = users.map(user => user.cityId);
+            const uniqueCityIds = [...new Set(cityIds)];
 
-    }
+            const cityWeather = uniqueCityIds.map(cityId => vikaApi.getActirovkaStatus(cityId, shift));
+
+
+        }catch (e) {
+
+        }
+    }, timeCheck, bot)
 }
 
 AppDataSource.initialize()

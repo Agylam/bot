@@ -1,6 +1,7 @@
 import {Entity, Column, BaseEntity, PrimaryColumn} from "typeorm"
 import {UserStates} from "../types/UserStates.js";
 import {ClassRanges} from "../types/ClassRanges.js";
+import {AppDataSource} from "../data-source";
 
 @Entity()
 export class User extends BaseEntity{
@@ -22,13 +23,6 @@ export class User extends BaseEntity{
     @Column({default: false})
     enabledNotify: boolean;
 
-    @Column({default: 0})
-    notifyHour: number;
-
-    @Column({default: 0})
-    notifyMinute: number;
-
-
     /* Non-required */
     @Column({nullable: true})
     cityId: number;
@@ -42,4 +36,13 @@ export class User extends BaseEntity{
 
     @Column({nullable: true})
     shift: number;
+
+    static getByShift(shift: 1|2){
+        return  AppDataSource.getRepository(User).find({
+            where: {
+                enabledNotify: true,
+                shift
+            }
+        });
+    }
 }

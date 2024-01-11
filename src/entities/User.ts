@@ -6,7 +6,7 @@ import {ClassRanges} from "../types/ClassRanges.js";
 export class User extends BaseEntity{
 
     /* Required */
-    @PrimaryColumn()
+    @PrimaryColumn({type:"bigint"})
     id: number;
 
     @Column({nullable: true})

@@ -7,4 +7,5 @@ export interface AdditionContext extends Context {
     user: User;
     vikaApi: VikaActirovkiAPI;
     city?: string;
+    isNeedInKeyboard?: boolean;
 }

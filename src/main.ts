@@ -188,9 +188,16 @@ const startBot = async () => {
         // Обработка города по геолокации
         bot.on(message("location"), async (ctx) => {
             const loc = ctx.message.location;
-            ctx.city = await getCityNameByGeo(loc.latitude, loc.longitude);
-            // @ts-ignore
-            await checkCityAction(ctx);
+            try {
+                ctx.city = await getCityNameByGeo(loc.latitude, loc.longitude);
+                // @ts-ignore
+                await checkCityAction(ctx);
+            }catch (e){
+                console.error("Location ERROR: ", e, "UserID:", ctx.user.id);
+                await ctx.reply("Ошибка. Попробуйте ввести название города.");
+                ctx.isNeedInKeyboard = false;
+                updateSettingAction(ctx);
+            }
         })
 
         // Обработка города по его названию

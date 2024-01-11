@@ -195,7 +195,7 @@ const startBot = async () => {
             }catch (e){
                 console.error("Location ERROR: ", e, "UserID:", ctx.user.id);
                 await ctx.reply("Ошибка. Попробуйте ввести название города.");
-                ctx.isNeedInKeyboard = false;
+                ctx.isNotNeedInKeyboard = false;
                 updateSettingAction(ctx);
             }
         })

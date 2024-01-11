@@ -3,11 +3,13 @@ import {UserStates} from "../types/UserStates.js";
 import {Markup} from "telegraf";
 
 export const updateSettingAction: Action = async (ctx, next) => {
-    await ctx.answerCbQuery();
+    try {
+        await ctx.answerCbQuery();
+    }catch (err) {}
     await ctx.reply("Хорошо. Давай начнём. Где ты живёшь? Можешь прислать название или геопозицию, как удобно",
-        Markup.keyboard([
+        ctx.isNeedInKeyboard ? Markup.keyboard([
             Markup.button.locationRequest("📍Прислать местоположение"),
-        ]).resize());
+        ]).resize(): undefined);
     ctx.user.state = UserStates.WAIT_CITY;
     await ctx.user.save();
     if(next !== undefined) return next();

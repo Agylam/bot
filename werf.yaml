@@ -6,6 +6,7 @@ build:
 
 deploy:
   helmChartDir: .helm/agylam-bot
+  namespace: agylam-production
 
 ---
 image: bot

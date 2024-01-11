@@ -41,16 +41,17 @@
     "dist"
   ],
   "watchOptions": {
-    "watchFile": "fixedPollingInterval",
-    "watchDirectory": "fixedPollingInterval",
+    "watchFile": "useFsEvents",
+    "watchDirectory": "dynamicprioritypolling",
     "fallbackPolling": "dynamicPriority",
     "synchronousWatchDirectory": true,
-    "excludeDirectories": [
-      "**/node_modules",
-      "dist"
-    ],
     "excludeFiles": [
       "build/fileWhichChangesOften.ts"
+    ],
+    "excludeDirectories": [
+      "node_modules",
+      "dist",
+      ".git"
     ]
   }
 }

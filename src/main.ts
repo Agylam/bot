@@ -12,7 +12,7 @@ import {message} from "telegraf/filters";
 import {UserStates} from "./types/UserStates.js";
 import {classKeyboard} from "./keyboards/classKeyboard.js";
 import {notFoundTryAgainText} from "./langs/NotFoundTryAgainText.js";
-import { NtpTimeSync } from 'ntp-time-sync';
+import {NtpTimeSync} from 'ntp-time-sync';
 import type {ClassRanges} from "./types/ClassRanges.js";
 import {shiftQuestion} from "./langs/shiftQuestion.js";
 import {shiftKeyboard} from "./keyboards/shiftKeyboard.js";
@@ -25,6 +25,9 @@ import {checkCityAction} from "./actions/checkCityAction.js";
 import {notifyMenuAction} from "./actions/notifyMenuAction.js";
 import {notifyKeyboard} from "./keyboards/notifyKeyboard.js";
 import {notifyMenu} from "./langs/notifyMenu.js";
+import {startKeyboard} from "./keyboards/startKeyboard.js";
+import {actirovkiNotify} from "./langs/actirovkiNotify.js";
+import {toMenuKeyboard} from "./keyboards/toMenuKeyboard.js";
 
 let bot: Telegraf<AdditionContext>;
 
@@ -32,9 +35,9 @@ const vikaApi = new VikaActirovkiAPI();
 const timeSync = NtpTimeSync.getInstance();
 
 
-const timeCheck = 36000000;
-const firstShiftTime = [6,10];
-const secondShiftTime = [11,30];
+let timeCheck = 60000;
+let firstShiftTime = [1, 10];
+let secondShiftTime = [6, 30];
 
 
 const getTime = async () => {
@@ -50,8 +53,8 @@ const getTime = async () => {
     const seconds = now.getSeconds();
     const day = now.getDay();
 
-    console.log({ hour, minute, seconds, day });
-    return { hour, minute, seconds, day };
+    console.log({hour, minute, seconds, day});
+    return {hour, minute, seconds, day};
 };
 
 const startBot = async () => {
@@ -67,9 +70,9 @@ const startBot = async () => {
         bot = new Telegraf<AdditionContext>(process.env['TELEGRAM_TOKEN']);
 
         bot.use(async (ctx, next) => {
-            console.log(ctx.message,ctx.reply);
+            console.log(ctx.message, ctx.reply);
 
-            try{
+            try {
                 if (ctx.from !== undefined) {
                     const user = await AppDataSource.getRepository(User).findOne({
                         where: {
@@ -87,7 +90,7 @@ const startBot = async () => {
                 }
                 ctx.vikaApi = vikaApi;
                 return next();
-            }catch (e){
+            } catch (e) {
                 console.error("Ошибка", e)
             }
         })
@@ -109,10 +112,12 @@ const startBot = async () => {
         /* Включение и отключение уведомлений */
         bot.action(/notify_(on|off)/, async (ctx, next) => {
             await ctx.answerCbQuery();
-
-            if(ctx.match[1] === undefined){
+            const user = ctx.user
+            if (!user.cityId || !user.classRange && !user.shift) {
+                await ctx.reply("Мы не до конца с вами знакомы. Познакомимся?", startKeyboard());
+            } else if (ctx.match[1] === undefined) {
                 await ctx.reply(notFoundTryAgainText());
-            }else{
+            } else {
                 ctx.user.enabledNotify = ctx.match[1] === "on";
                 await ctx.user.save();
                 await ctx.editMessageText(
@@ -127,9 +132,9 @@ const startBot = async () => {
         // Подтверждение смены при знакомстве
         bot.action(/verify_shift_(1|2)/, async (ctx) => {
             await ctx.answerCbQuery();
-            const shift : UserShifts = Number(ctx.match[1]);
+            const shift: UserShifts = Number(ctx.match[1]);
 
-            if(shift < 1 || shift > 2) {
+            if (shift < 1 || shift > 2) {
                 await ctx.reply(notFoundTryAgainText());
                 return;
             }
@@ -145,9 +150,9 @@ const startBot = async () => {
         // Подтверждение выбора класса при знакомстве
         bot.action(/verify_class_(\d+)/, async (ctx) => {
             await ctx.answerCbQuery();
-            const classRange : ClassRanges = Number(ctx.match[1]);
+            const classRange: ClassRanges = Number(ctx.match[1]);
 
-            if(classRange < 0 || classRange > 2) {
+            if (classRange < 0 || classRange > 2) {
                 await ctx.reply(notFoundTryAgainText());
                 return;
             }
@@ -165,7 +170,7 @@ const startBot = async () => {
 
             const cityId = Number(ctx.match[1]);
             const cityName = ctx.vikaApi.cities[Number(ctx.match[1])];
-            if(cityName === undefined){
+            if (cityName === undefined) {
                 await ctx.reply(notFoundTryAgainText());
                 return;
             }
@@ -181,7 +186,7 @@ const startBot = async () => {
         });
 
         // Обработка города по геолокации
-        bot.on(message("location"), async (ctx)=>{
+        bot.on(message("location"), async (ctx) => {
             const loc = ctx.message.location;
             ctx.city = await getCityNameByGeo(loc.latitude, loc.longitude);
             // @ts-ignore
@@ -201,15 +206,17 @@ const startBot = async () => {
     }
 
     // ВНИМАНИЕ, ГОВНОКОД !!!
-    setInterval(async (bot)=>{
+    setInterval(async (firstShiftTime, secondShiftTime) => {
         try {
             const {hour, minute} = await getTime();
-            let shift: 1|2;
-            if(hour === firstShiftTime[0] && minute === firstShiftTime[1]){
+            let shift: 1 | 2;
+            if (hour === firstShiftTime[0] && minute === firstShiftTime[1]) {
+                console.log("Оповещаем первую смену......")
                 shift = 1;
-            }else if(hour === secondShiftTime[0] && minute === secondShiftTime[1]){
+            } else if (hour === secondShiftTime[0] && minute === secondShiftTime[1]) {
+                console.log("Оповещаем вторую смену......")
                 shift = 2;
-            }else{
+            } else {
                 return;
             }
             const users = await User.getByShift(shift);
@@ -217,13 +224,39 @@ const startBot = async () => {
             const cityIds = users.map(user => user.cityId);
             const uniqueCityIds = [...new Set(cityIds)];
 
-            const cityWeather = uniqueCityIds.map(cityId => vikaApi.getActirovkaStatus(cityId, shift));
+            const citiesWeather = await Promise.all(uniqueCityIds.map(async (cityId) => {
+                const weather = await vikaApi.getActirovkaStatus(cityId, shift);
+                const user_list = users
+                    .filter(user => user.cityId == cityId)
+                return {
+                    cityId,
+                    weather,
+                    users: user_list
+                };
+            }));
 
 
-        }catch (e) {
+            citiesWeather.map((cityWeather) => {
+                try {
+                    cityWeather.users.map(user => {
+                        try {
+                            bot.telegram.sendMessage(user.id, actirovkiNotify(cityWeather.weather, user), toMenuKeyboard())
+                            console.log("Успешно оповестили пользователя ID"+user.id+" в городе "+cityWeather.weather.city.name);
+                        } catch (e) {
+                            bot.telegram.sendMessage(user.id, "Внутренняя ошибка. Обратись к администрации бота.", toMenuKeyboard());
+                            console.error("Ошибка. NotifyUser: ", e, "Объект городской погоды:", cityWeather)
+                        }
+                    });
+                } catch (e) {
+                    console.error("Ошибка. NotifyUser MAP: ", e, "Объект городской погоды:", cityWeather)
+                }
+            })
 
+
+        } catch (e) {
+            console.error("Ошибка таймера:", e)
         }
-    }, timeCheck, bot)
+    }, timeCheck, firstShiftTime, secondShiftTime)
 }
 
 AppDataSource.initialize()

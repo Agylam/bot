@@ -1,7 +1,6 @@
 import {Entity, Column, BaseEntity, PrimaryColumn} from "typeorm"
 import {UserStates} from "../types/UserStates.js";
 import {ClassRanges} from "../types/ClassRanges.js";
-import {AppDataSource} from "../data-source";
 
 @Entity()
 export class User extends BaseEntity{
@@ -38,11 +37,9 @@ export class User extends BaseEntity{
     shift: number;
 
     static getByShift(shift: 1|2){
-        return  AppDataSource.getRepository(User).find({
-            where: {
-                enabledNotify: true,
-                shift
-            }
-        });
+        return this.createQueryBuilder("user")
+            .where("user.enabledNotify = true", )
+            .andWhere("user.shift = :shift", { shift })
+            .getMany();
     }
 }

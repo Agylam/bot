@@ -7,7 +7,7 @@ export const updateSettingAction: Action = async (ctx, next) => {
         await ctx.answerCbQuery();
     }catch (err) {}
     await ctx.reply("Хорошо. Давай начнём. Где ты живёшь? Можешь прислать название или геопозицию, как удобно",
-         Markup.keyboard(ctx.isNeedInKeyboard ?[
+         Markup.keyboard(!ctx.isNotNeedInKeyboard ?[
             Markup.button.locationRequest("📍Прислать местоположение"),
         ]:[]).resize());
     ctx.user.state = UserStates.WAIT_CITY;

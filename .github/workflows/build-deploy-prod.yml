@@ -28,6 +28,7 @@ jobs:
           
         - name: Run script
           run: |
+            printenv
             . $(werf ci-env github --as-file)
             docker login -u agylam -p ${{ secrets.DK_TOKEN }}
             werf converge --debug --env=production --atomic --values .helm/agylam-bot/common-values.yaml --values .helm/agylam-bot/prod-values.yaml --repo agylam/agylam --repo-docker-hub-token='${{ secrets.DK_TOKEN }}' --repo-docker-hub-username=agylam

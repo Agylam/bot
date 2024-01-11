@@ -30,6 +30,6 @@ jobs:
           run: |
             . $(werf ci-env github --as-file)
             docker login -u agylam -p ${{ secrets.DK_TOKEN }}
-            werf converge --debug --env=production --atomic --values .helm/agylam-bot/common-values.yaml --values .helm/agylam-bot/prod-values.yaml --repo agylam/bot --repo-docker-hub-token='${{ secrets.DK_TOKEN }}' --repo-docker-hub-username=agylam
+            werf converge --debug --env=production --atomic --values .helm/agylam-bot/common-values.yaml --values .helm/agylam-bot/prod-values.yaml --repo agylam/agylam --repo-docker-hub-token='${{ secrets.DK_TOKEN }}' --repo-docker-hub-username=agylam
           env:
             WERF_KUBECONFIG_BASE64: ${{ secrets.KUBE_CONFIG_64 }}

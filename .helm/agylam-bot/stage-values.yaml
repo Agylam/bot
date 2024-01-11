@@ -1,0 +1,23 @@
+global:
+  tier: "stage"
+  ref: "stage"
+
+ENV:
+  stage:
+    PGPORT: "5432"
+    PGDATABASE: agylam
+    PGHOST: postgres
+
+postgresql:
+  enabled: true
+  auth:
+    postgresPassword: "{{ STAGE_PGPASSWORD }}"
+    username: "{{ STAGE_PGUSER }}"
+    password: "{{ STAGE_PGPASSWORD }}"
+
+SECRETS:
+  stage:
+    DADATA_TOKEN: "{{ DADATA_TOKEN }}"
+    TELEGRAM_TOKEN: "{{ STAGE_TELEGRAM_TOKEN }}"
+    PGUSER: "{{ STAGE_PGUSER }}"
+    PGPASSWORD: "{{ STAGE_PGPASSWORD }}"

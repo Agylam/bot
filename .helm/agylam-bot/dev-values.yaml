@@ -1,0 +1,22 @@
+global:
+  tier: "dev"
+
+ENV:
+  dev:
+    PGPORT: "5432"
+    PGDATABASE: agylam
+    PGHOST: postgres
+
+postgresql:
+  enabled: true
+  auth:
+    postgresPassword: "{{ DEV_PGPASSWORD }}"
+    username: "{{ DEV_PGUSER }}"
+    password: "{{ DEV_PGPASSWORD }}"
+
+SECRETS:
+  dev:
+    DADATA_TOKEN: "{{ DADATA_TOKEN }}"
+    TELEGRAM_TOKEN: "{{ DEV_TELEGRAM_TOKEN }}"
+    PGUSER: "{{ DEV_PGUSER }}"
+    PGPASSWORD: "{{ DEV_PGPASSWORD }}"

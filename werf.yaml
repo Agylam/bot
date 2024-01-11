@@ -1,0 +1,14 @@
+project: agylam-bot
+configVersion: 1
+
+build:
+  platform: [ 'linux/amd64' ]
+
+deploy:
+  helmChartDir: .helm/agylam-bot
+
+---
+image: bot
+dockerfile: docker/Dockerfile
+context: .
+platform: [ 'linux/amd64' ]

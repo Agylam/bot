@@ -1,0 +1,33 @@
+name: Lint
+
+on: [ push, pull_request ]
+
+jobs:
+  eslint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: borales/actions-yarn@v4
+        with:
+          cmd: install
+      - uses: borales/actions-yarn@v4
+        with:
+          cmd: lint
+
+
+  helm-check:
+    strategy:
+      matrix:
+        staging: [ dev, stage, prod ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Install werf
+        uses: werf/actions/install@v1.2
+
+      - name: Helm lint ${{ matrix.staging }}
+        run: werf helm dependency update .helm/agylam-bot/ && werf helm lint .helm/agylam-bot/ --env=${{ matrix.staging }} -f .helm/agylam-bot/common-values.yaml -f .helm/agylam-bot/${{ matrix.staging }}-values.yaml

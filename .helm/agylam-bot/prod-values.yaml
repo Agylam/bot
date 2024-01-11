@@ -1,0 +1,20 @@
+global:
+  tier: "prod"
+  ref: "tag"
+  isTag: true
+
+ENV:
+  production:
+    PGPORT: "5432"
+    PGDATABASE: agylam
+
+postgresql:
+  enabled: false
+
+SECRETS:
+  production:
+    DADATA_TOKEN: "{{ DADATA_TOKEN }}"
+    TELEGRAM_TOKEN: "{{ PRODUCTION_TELEGRAM_TOKEN }}"
+    PGUSER: "{{ PRODUCTION_PGUSER }}"
+    PGPASSWORD: "{{ PRODUCTION_PGPASSWORD }}"
+    PGHOST: "{{ PRODUCTION_PGHOST }}"

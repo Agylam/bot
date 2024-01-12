@@ -19,7 +19,7 @@ export class User extends BaseEntity{
     })
     state: UserStates;
 
-    @Column({default: false})
+    @Column({default: true})
     enabledNotify: boolean;
 
     /* Non-required */

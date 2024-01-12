@@ -1,5 +1,5 @@
 export const getCityNameByGeo = async (lat: number, lon: number) => {
-        const result = await fetch("https://suggestions.dadata.ru/suggestions/api/4_1/rs/geolocate/address", {
+        const result = await fetch("http://suggestions.dadata.ru/suggestions/api/4_1/rs/geolocate/address", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

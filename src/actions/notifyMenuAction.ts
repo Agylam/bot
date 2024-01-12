@@ -4,5 +4,7 @@ import {notifyKeyboard} from "../keyboards/notifyKeyboard.js";
 
 export const notifyMenuAction: Action = async (ctx) => {
     await ctx.answerCbQuery();
-    await ctx.editMessageText(notifyMenu(ctx.user.enabledNotify), notifyKeyboard(ctx.user.enabledNotify))
+    const user = ctx.user;
+    const isEnabledNotify = ctx.user.enabledNotify && !(!user.cityId || !user.classRange || !user.shift);
+    await ctx.editMessageText(notifyMenu(ctx.user.enabledNotify), notifyKeyboard(isEnabledNotify))
 }

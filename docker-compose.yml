@@ -10,7 +10,7 @@ services:
       POSTGRES_PORT: ${PGPORT}
       POSTGRES_DATA: ${PGDATA}
     ports:
-      - "${PGPORT}:${PGPORT}"
+      - "${PGEXPOSEPORT}:${PGPORT}"
     volumes:
       - ./dataDB:/var/lib/postgresql/data
     user: root

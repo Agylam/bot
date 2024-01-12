@@ -34,7 +34,7 @@ services:
       - ./src:/app/src
     build:
       context: ./
-      dockerfile: ./dev.Dockerfile
+      dockerfile: ./docker/dev.Dockerfile
     depends_on:
       postgres:
         condition: service_healthy

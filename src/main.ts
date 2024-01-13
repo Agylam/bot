@@ -119,8 +119,6 @@ const startBot = async () => {
                 return;
             }
 
-            console.log("AS", ctx.match, cityId)
-
             ctx.user.cityId = Number(cityId);
             ctx.user.state = UserStates.NONE;
             await ctx.user.save();

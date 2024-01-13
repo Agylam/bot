@@ -115,7 +115,6 @@ export class VikaActirovkiAPI {
                 response.status = false;
             }
         }
-        console.log("Отправил данные по API", response)
         return response;
     }
 }

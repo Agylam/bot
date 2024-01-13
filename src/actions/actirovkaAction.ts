@@ -12,8 +12,6 @@ export const actirovkaAction: Action = async (ctx, next) => {
         if(user.cityId !== null && user.classRange !== null && user.shift !== null){
             const actirovkaStatus = await ctx.vikaApi.getActirovkaStatus(user.cityId, user.shift);
 
-            console.log("A", actirovkaStatus)
-
             await ctx.reply(actirovkiNotify(actirovkaStatus, user), toMenuKeyboard());
         }else {
             await ctx.reply("Мы не до конца с вами знакомы. Познакомимся?", startKeyboard());

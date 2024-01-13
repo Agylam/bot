@@ -6,9 +6,9 @@ export const updateSettingAction: Action = async (ctx, next) => {
     try {
         await ctx.answerCbQuery();
     }catch (err) {}
-    await ctx.reply("Хорошо. Давай начнём. Где ты живёшь? Можешь прислать название или геопозицию, как удобно",
+    await ctx.reply("Хорошо. Давай начнём. Где ты живёшь? Можешь написать название или геопозицию, как удобно",
          Markup.keyboard(!ctx.isNotNeedInKeyboard ?[
-            Markup.button.locationRequest("📍Прислать местоположение"),
+            Markup.button.locationRequest("📍Отправить местоположение"),
         ]:[]).resize());
     ctx.user.state = UserStates.WAIT_CITY;
     await ctx.user.save();

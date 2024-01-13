@@ -13,7 +13,9 @@ let secondShiftTime = [6, 30]; // 11:30 по UTC+5
 export const notifier = async (bot: Telegraf<AdditionContext>, vikaApi: VikaActirovkiAPI)=>{
     setInterval(async () => {
         try {
-            const {hour, minute} = await getTime();
+            const {hour, minute, day} = await getTime();
+            if(day === 7) return;
+
             let shift: 1 | 2;
             if (hour === firstShiftTime[0] && minute === firstShiftTime[1]) {
                 console.log("Оповещаем первую смену......")

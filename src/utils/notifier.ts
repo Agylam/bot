@@ -7,8 +7,8 @@ import {getTime} from "./getTime.js";
 import {VikaActirovkiAPI} from "../VikaActirovkiAPI.js";
 
 let timeCheck = 60000;
-let firstShiftTime = [2, 19];
-let secondShiftTime = [6, 30];
+let firstShiftTime = [1, 10]; // 6:10 по UTC+5
+let secondShiftTime = [6, 30]; // 11:30 по UTC+5
 
 export const notifier = async (bot: Telegraf<AdditionContext>, vikaApi: VikaActirovkiAPI)=>{
     setInterval(async () => {

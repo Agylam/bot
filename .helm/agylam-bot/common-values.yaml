@@ -6,8 +6,8 @@ global:
 
 bot:
   image: agylam/bot
-  replicas: 2
-  ports:
+  replicas: 1
+  ports: {}
 
 postgresql:
   enabled: true

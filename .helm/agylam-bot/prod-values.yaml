@@ -10,6 +10,13 @@ ENV:
 
 postgresql:
   enabled: true
+  fullnameOverride: postgres
+  commonAnnotations:
+    helm.sh/hook: pre-install,pre-upgrade
+  auth:
+    database: agylam
+    username: "{{ PRODUCTION_PGUSER }}"
+    password: "{{ PRODUCTION_PGPASSWORD }}"
 
 SECRETS:
   production:

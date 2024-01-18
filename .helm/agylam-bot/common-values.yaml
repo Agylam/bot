@@ -16,8 +16,8 @@ postgresql:
     helm.sh/hook: pre-install,pre-upgrade
   auth:
     database: agylam
-    username: "{{ PRODUCTION_PGUSER }}"
-    password: "{{ PRODUCTION_PGPASSWORD }}"
+    username: changeme
+    password: changeme
 
 ENV: {}
 

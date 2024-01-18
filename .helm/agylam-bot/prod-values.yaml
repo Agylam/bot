@@ -1,12 +1,13 @@
 global:
+  project: agylam-bot
   tier: "prod"
   ref: "tag"
   isTag: true
 
-ENV:
-  production:
-    PGPORT: "5432"
-    PGDATABASE: agylam
+bot:
+  image: agylam/bot
+  replicas: 1
+  ports: {}
 
 postgresql:
   enabled: true
@@ -17,6 +18,11 @@ postgresql:
     database: agylam
     username: "{{ PRODUCTION_PGUSER }}"
     password: "{{ PRODUCTION_PGPASSWORD }}"
+
+ENV:
+  production:
+    PGPORT: "5432"
+    PGDATABASE: agylam
 
 SECRETS:
   production:

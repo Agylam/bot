@@ -55,7 +55,7 @@ const startBot = async () => {
 
         /* Включение и отключение уведомлений */
         bot.action(/notify_(on|off)/, async (ctx, next) => {
-            await ctx.answerCbQuery();
+            await ctx.softAnswerCbQuery();
             const user = ctx.user
             if (!user.cityId || !user.classRange && !user.shift) {
                 await ctx.reply("Мы не до конца с вами знакомы. Познакомимся?", startKeyboard());
@@ -75,7 +75,7 @@ const startBot = async () => {
 
         // Подтверждение смены при знакомстве
         bot.action(/verify_shift_(1|2)/, async (ctx) => {
-            await ctx.answerCbQuery();
+            await ctx.softAnswerCbQuery();
             const shift: UserShifts = Number(ctx.match[1]);
 
             if (shift < 1 || shift > 2) {
@@ -93,7 +93,7 @@ const startBot = async () => {
 
         // Подтверждение выбора класса при знакомстве
         bot.action(/verify_class_(\d+)/, async (ctx) => {
-            await ctx.answerCbQuery();
+            await ctx.softAnswerCbQuery();
             const classRange: ClassRanges = Number(ctx.match[1]);
 
             if (classRange < 0 || classRange > 2) {
@@ -110,7 +110,7 @@ const startBot = async () => {
 
         // Подтверждение выбора города при знакомстве
         bot.action(/verify_city_(\d+)/, async (ctx) => {
-            await ctx.answerCbQuery();
+            await ctx.softAnswerCbQuery();
 
             const cityId = Number(ctx.match[1]);
             const cityName = ctx.vikaApi.cities[Number(ctx.match[1])];
@@ -148,9 +148,12 @@ const startBot = async () => {
 
         notifier(bot, vikaApi);
 
-        bot.launch()
+        const launch = () => bot.launch()
             .then(()=>console.log("Бот успешно запущен"))
-            .catch(err => console.error("Ошибка запуска бота:", err))
+            .catch(err => {
+                console.error("Ошибка запуска бота:", err);
+                launch();
+            })
 
         process.once('SIGINT', () => bot.stop('SIGINT'))
         process.once('SIGTERM', () => bot.stop('SIGTERM'))

@@ -5,7 +5,7 @@ import {toMenuKeyboard} from "../keyboards/toMenuKeyboard.js";
 import {startKeyboard} from "../keyboards/startKeyboard.js";
 
 export const actirovkaAction: Action = async (ctx, next) => {
-    await ctx.answerCbQuery();
+    await ctx.softAnswerCbQuery();
 
     try{
         const user = ctx.user

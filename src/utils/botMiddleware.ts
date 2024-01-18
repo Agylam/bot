@@ -25,6 +25,14 @@ export const botMiddleware = (vikaApi: VikaActirovkiAPI) : Middleware<AdditionCo
                 await ctx.user.save();
             }
             ctx.vikaApi = vikaApi;
+
+            ctx.softAnswerCbQuery = async ()=>{
+                try {
+                    await ctx.answerCbQuery();
+                }catch (e) {
+                    console.log("Ошибка answerCbQuery");
+                }
+            }
             return next();
         } catch (e) {
             console.error("Ошибка", e)

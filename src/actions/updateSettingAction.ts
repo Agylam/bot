@@ -3,9 +3,7 @@ import {UserStates} from "../types/UserStates.js";
 import {Markup} from "telegraf";
 
 export const updateSettingAction: Action = async (ctx, next) => {
-    try {
-        await ctx.answerCbQuery();
-    }catch (err) {}
+    await ctx.softAnswerCbQuery();
     await ctx.reply("Хорошо. Давай начнём. Где ты живёшь? Можешь написать название или геопозицию, как удобно",
          Markup.keyboard(!ctx.isNotNeedInKeyboard ?[
             Markup.button.locationRequest("📍Отправить местоположение"),

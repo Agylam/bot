@@ -1,4 +1,4 @@
-import {Entity, Column, BaseEntity, PrimaryColumn} from "typeorm"
+import {Entity, Column, BaseEntity, PrimaryColumn, CreateDateColumn} from "typeorm"
 import {UserStates} from "../types/UserStates.js";
 import {ClassRanges} from "../types/ClassRanges.js";
 
@@ -42,4 +42,7 @@ export class User extends BaseEntity{
             .andWhere("user.shift = :shift", { shift })
             .getMany();
     }
+
+    @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
+    created_at: Date;
 }
